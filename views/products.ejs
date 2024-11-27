@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/products">Products</a>
+            <a href="/categories">Categories</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Product Management</h2>
+
+        <!-- Form to Add a New Product -->
+        <form method="POST" action="/products" style="margin-bottom: 20px;">
+            <input type="text" name="ProductName" placeholder="Enter product name" required>
+            <select name="CategoryId" required>
+                <% categories.forEach(category => { %>
+                    <option value="<%= category.CategoryId %>"><%= category.CategoryName %></option>
+                <% }) %>
+            </select>
+            <button type="submit">Add Product</button>
+        </form>
+
+        <!-- Product Table -->
+        <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; text-align: left;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>CategoryId</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(product => { %>
+                    <tr>
+                        <td><%= product.ProductId %></td>
+                        <td><%= product.ProductName %></td>
+                        <td><%= product.CategoryName %></td>
+                        <td><%= product.CategoryId %></td>
+                        <td>
+                            <!-- Update Button (Inside the same <td>) -->
+                            <button 
+                                class="update-button" 
+                                data-id="<%= product.ProductId %>" 
+                                data-name="<%- product.ProductName.replace(/'/g, "\\'") %>" 
+                                data-category="<%= product.CategoryId %>"
+                                style="margin-right: 10px;"
+                            >
+                                Update
+                            </button>
+            
+                            <!-- Delete Form (Inside the same <td>) -->
+                            <form method="POST" action="/products/delete/<%= product.ProductId %>" style="display: inline;">
+                                <button type="submit" >Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+            
+        </table>
+
+        <!-- Pagination Links -->
+        <div class="pagination" style="margin-top: 20px;">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a 
+                    href="/products?page=<%= i %>&pageSize=10"
+                    class="pagination-link <%= currentPage === i ? 'active' : '' %>">
+                    <%= i %>
+                </a>
+            <% } %>
+        </div>
+
+        <!-- Update Form (Hidden by Default) -->
+        <div id="updateForm" style="display: none; margin-top: 20px; border: 1px solid #ccc; padding: 20px;">
+            <h3>Update Product</h3>
+            <form id="updateProductForm" method="POST" action="">
+                <input type="text" id="updateProductName" name="ProductName" required>
+                <select id="updateCategoryId" name="CategoryId" required>
+                    <% categories.forEach(category => { %>
+                        <option value="<%= category.CategoryId %>"><%= category.CategoryName %></option>
+                    <% }) %>
+                </select>
+                <button type="submit">Update</button>
+                <button type="button" onclick="closeUpdateForm()">Cancel</button>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        // Attach click event listener to all update buttons
+        document.querySelectorAll('.update-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const id = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const categoryId = button.getAttribute('data-category');
+
+                const form = document.getElementById('updateForm');
+                form.style.display = 'block';
+                document.getElementById('updateProductName').value = name;
+                document.getElementById('updateCategoryId').value = categoryId;
+                document.getElementById('updateProductForm').action = `/products/update/${id}`;
+            });
+        });
+
+        // Close the Update Form
+        function closeUpdateForm() {
+            const form = document.getElementById('updateForm');
+            form.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

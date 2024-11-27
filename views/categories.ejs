@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Management</title>
+    <!-- Link to External Stylesheet -->
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/products">Products</a>
+            <a href="/categories">Categories</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Category Management</h2>
+
+        <!-- Form to Add a New Category -->
+        <form method="POST" action="/categories" style="margin-bottom: 20px;">
+            <input type="text" name="CategoryName" placeholder="Enter category name" required>
+            <button type="submit">Add Category</button>
+        </form>
+
+        <!-- Category Table -->
+        <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; text-align: left;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Category Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% categories.forEach(category => { %>
+                    <tr>
+                        <td><%= category.CategoryId %></td>
+                        <td><%= category.CategoryName %></td>
+                        <td>
+                            <!-- Update Button (Using data-* attributes) -->
+                            <button 
+                                class="update-button" 
+                                data-id="<%= category.CategoryId %>" 
+                                data-name="<%- category.CategoryName.replace(/'/g, "\\'") %>" 
+                                style="margin-right: 10px;"
+                            >
+                                Update
+                            </button>
+
+                            <!-- Delete Form -->
+                            <form method="POST" action="/categories/delete/<%= category.CategoryId %>" style="display: inline;">
+                                <button type="submit" >Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+        <!-- Update Form (Hidden by Default) -->
+        <div id="updateForm" style="display: none; margin-top: 20px; border: 1px solid #ccc; padding: 20px;">
+            <h3>Update Category</h3>
+            <form id="updateCategoryForm" method="POST" action="">
+                <input type="text" id="updateCategoryName" name="CategoryName" required>
+                <button type="submit">Update</button>
+                <button type="button" onclick="closeUpdateForm()">Cancel</button>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        // Attach click event listener to all update buttons
+        document.querySelectorAll('.update-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const id = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+
+                const form = document.getElementById('updateForm');
+                form.style.display = 'block';
+                document.getElementById('updateCategoryName').value = name;
+                document.getElementById('updateCategoryForm').action = `/categories/update/${id}`;
+            });
+        });
+
+        // Close the Update Form
+        function closeUpdateForm() {
+            const form = document.getElementById('updateForm');
+            form.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
