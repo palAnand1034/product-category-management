@@ -14,5 +14,12 @@ A Node.js project to manage products and categories using CRUD operations. This 
 - EJS (View Engine)
 - MySQL (RDBMS)
 
+## Home Page
+![Home Page](images/home.png)
 
+## Product Page
+![Product Page](images/Product.png)
+
+## Category Page
+![Category Page](images/category.png)
    
